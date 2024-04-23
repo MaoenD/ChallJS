@@ -1,6 +1,6 @@
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 800;
-const ENEMY_INTERVAL = 250;
+const ENEMY_INTERVAL = 2;
 const ENEMY_SPEED = 2;
 const ENEMY_SIZE = 50;
 const MIN_DISTANCE_TO_PLAYER = 300;
@@ -76,9 +76,9 @@ function displayGameOver() {
   fill(0);
   textFont(font);
   textSize(60);
-  text("G a m e   O v e r", GAME_WIDTH / 2 - 250, GAME_HEIGHT / 2);
+  text("G a m e   O v e r", GAME_WIDTH / 2 - 225, GAME_HEIGHT / 2);
   textSize(30);
-  text("Press R to restart", GAME_WIDTH / 2 - 150, GAME_HEIGHT / 2 + 50);
+  text("Press R to restart", GAME_WIDTH / 2 - 125, GAME_HEIGHT / 2 + 50);
 
   player.x = GAME_HEIGHT / 2;
   player.y = GAME_WIDTH / 2 + 200;
@@ -166,13 +166,16 @@ class Player {r
   }
 
   update() {
+    fill(210);
+    rect(GAME_WIDTH / 2 + - 250, GAME_HEIGHT / 2 - 250, 500, 500);
+
     if(this.life === 0) {
       gameOver = true;
       displayGameOver();
     }
 
-    this.x = constrain(this.x, 0 + this.width / 2, GAME_WIDTH - this.width / 2);
-    this.y = constrain(this.y, 0 + this.height / 2, GAME_HEIGHT - this.height / 2);
+    this.x = constrain(this.x, 0 + this.width / 2 + 150, GAME_WIDTH - this.width / 2 - 150);
+    this.y = constrain(this.y, 0 + this.height / 2 + 150, GAME_HEIGHT - this.height / 2 - 150);
   }
 
   display() {
