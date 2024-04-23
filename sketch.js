@@ -7,11 +7,13 @@ const MIN_DISTANCE_TO_PLAYER = 300;
 const BULLET_SPEED = 5;
 const SHIELD_WIDTH = 10;
 const SHIELD_HEIGHT = 100;
-const SHIELD_OFFSET = 35;  // Distance from the center of the player
+const SHIELD_OFFSET = 35;
 
 let player;
 let enemies = [];
 let bullets = [];
+
+let gameOver = false;
 
 function setup() {
   createCanvas(GAME_WIDTH, GAME_HEIGHT);
@@ -20,10 +22,12 @@ function setup() {
 
 function draw() {
   background(220);
+
+  player.update();
   player.display();
   player.handleInput();
 
-  if (frameCount % ENEMY_INTERVAL === 0) {
+  if (frameCount % ENEMY_INTERVAL === 0 && !gameOver) {
     enemies.push(new Enemy(player.x, player.y));
   }
 
@@ -33,6 +37,40 @@ function draw() {
   }
 
   updateAndDisplayBullets();
+  displayLife();
+}
+
+function displayLife() {
+  fill(0);
+  textSize(32);
+  text("Life: " + player.life, 10, 30);
+}
+
+function displayGameOver() {
+  fill(0);
+  textSize(32);
+  text("Game Over", GAME_WIDTH / 2 - 100, GAME_HEIGHT / 2);
+  text("Press R to restart", GAME_WIDTH / 2 - 150, GAME_HEIGHT / 2 + 50);
+
+  player.x = -1000;
+  player.y = -1000;
+
+  bullets = [];
+  enemies = [];
+
+
+  // Press R to restart
+  if (keyIsDown(82)) {
+    restartGame();
+    console.log("Restarting game");
+  }
+}
+
+function restartGame() {
+  player.x = GAME_WIDTH / 2;
+  player.y = GAME_HEIGHT / 2;
+  player.life = 3;
+  gameOver = false;
 }
 
 function updateAndDisplayBullets() {
@@ -41,22 +79,23 @@ function updateAndDisplayBullets() {
     bullets[i].display();
 
     if (bullets[i].collideWithShield(player.getShieldBounds())) {
-      console.log("Shield hit");
       bullets[i].reverse();
+      bullets[i].isPlayerBullet = true;
       continue;
     }
     if (player.collideWithBullet(bullets[i])) {
-      console.log("Player hit");
+      player.life--;
       bullets.splice(i, 1);
+      continue; 
     }
   }
 
   for (let i = enemies.length - 1; i >= 0; i--) {
     for (let j = bullets.length - 1; j >= 0; j--) {
-      if (enemies[i].collideWithBullet(bullets[j])) {
-        console.log("Enemy hit");
-        enemies.splice(i, 1);
+      if (bullets[j] && bullets[j].isPlayerBullet && enemies[i] && enemies[i].collideWithBullet(bullets[j])) {
+        enemies.splice(i, 1); 
         bullets.splice(j, 1);
+        break;
       }
     }
   }
@@ -66,22 +105,33 @@ class Player {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.life = 3;
     this.width = 50;
     this.height = 50;
+    this.speed = 5;
   }
 
   handleInput() {
+    if(gameOver) return;
+
     if (keyIsDown(LEFT_ARROW)) {
-      this.x -= 5;
+      this.x -= this.speed;
     }
     if (keyIsDown(RIGHT_ARROW)) {
-      this.x += 5;
+      this.x += this.speed;
     }
     if (keyIsDown(UP_ARROW)) {
-      this.y -= 5;
+      this.y -= this.speed;
     }
     if (keyIsDown(DOWN_ARROW)) {
-      this.y += 5;
+      this.y += this.speed;
+    }
+  }
+
+  update() {
+    if(this.life === 0) {
+      gameOver = true;
+      displayGameOver();
     }
   }
 
@@ -131,7 +181,7 @@ class Enemy {
       this.moveAwayFromPlayer(playerX, playerY);
     }
 
-    if (millis() - this.lastShotTime > random(1000, 3000)) {
+    if (millis() - this.lastShotTime > random(1000, 3000) && !gameOver) {
       this.shoot(playerX, playerY);
       this.lastShotTime = millis();
     }
@@ -173,6 +223,7 @@ class Bullet {
   constructor(x, y, playerX, playerY) {
     this.x = x;
     this.y = y;
+    this.isPlayerBullet = false;
     let dx = playerX - this.x;
     let dy = playerY - this.y;
     this.angle = atan2(dy, dx);
