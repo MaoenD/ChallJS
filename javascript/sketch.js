@@ -112,6 +112,10 @@ function updateAndDisplayBullets() {
       bullets.splice(i, 1);
       continue; 
     }
+
+    if (bullets[i].x < 0 || bullets[i].x > GAME_WIDTH || bullets[i].y < 0 || bullets[i].y > GAME_HEIGHT) {
+      bullets.splice(i, 1);
+    }
   }
 
   for (let i = enemies.length - 1; i >= 0; i--) {
