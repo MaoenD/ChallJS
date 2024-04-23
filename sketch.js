@@ -1,10 +1,10 @@
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 800;
-const ENEMY_INTERVAL = 300;
+const ENEMY_INTERVAL = 250;
 const ENEMY_SPEED = 2;
 const ENEMY_SIZE = 50;
 const MIN_DISTANCE_TO_PLAYER = 300;
-const BULLET_SPEED = 5;
+const BULLET_SPEED = 7;
 const SHIELD_WIDTH = 10;
 const SHIELD_HEIGHT = 100;
 const SHIELD_OFFSET = 35;
@@ -13,7 +13,26 @@ let player;
 let enemies = [];
 let bullets = [];
 
+let playerHitSound;
+let enemyDeathSound;
+let shieldHitSound;
+let shootEnemySound;
+let gameOverSound;
+
+let font;
+
 let gameOver = false;
+let gameOverSoundPlayed = false;
+
+function preload() {
+  playerHitSound = loadSound('sound/playerHit.wav');
+  enemyDeathSound = loadSound('sound/enemyDeath.wav');
+  shieldHitSound = loadSound('sound/shieldHit.wav');
+  shootEnemySound = loadSound('sound/shootEnemy.wav');
+  gameOverSound = loadSound('sound/gameOver.wav');
+
+  font = loadFont('font/font.otf');
+}
 
 function setup() {
   createCanvas(GAME_WIDTH, GAME_HEIGHT);
@@ -42,24 +61,36 @@ function draw() {
 
 function displayLife() {
   fill(0);
-  textSize(32);
-  text("Life: " + player.life, 10, 30);
+  textSize(50);
+  textFont('Courier New');
+  if (player.life === 3) {
+    text("❤️❤️❤️", 10, 60);
+  } else if (player.life === 2) {
+    text("❤️❤️", 10, 60);
+  } else if (player.life === 1) {
+    text("❤️", 10, 60);
+  }
 }
 
 function displayGameOver() {
   fill(0);
-  textSize(32);
-  text("Game Over", GAME_WIDTH / 2 - 100, GAME_HEIGHT / 2);
+  textFont(font);
+  textSize(60);
+  text("G a m e   O v e r", GAME_WIDTH / 2 - 250, GAME_HEIGHT / 2);
+  textSize(30);
   text("Press R to restart", GAME_WIDTH / 2 - 150, GAME_HEIGHT / 2 + 50);
 
-  player.x = -1000;
-  player.y = -1000;
+  player.x = GAME_HEIGHT / 2;
+  player.y = GAME_WIDTH / 2 + 200;
 
   bullets = [];
   enemies = [];
 
+  if (!gameOverSoundPlayed) {
+    gameOverSound.play();
+    gameOverSoundPlayed = true;
+  }
 
-  // Press R to restart
   if (keyIsDown(82)) {
     restartGame();
     console.log("Restarting game");
@@ -71,6 +102,7 @@ function restartGame() {
   player.y = GAME_HEIGHT / 2;
   player.life = 3;
   gameOver = false;
+  gameOverSoundPlayed = false;
 }
 
 function updateAndDisplayBullets() {
@@ -81,10 +113,13 @@ function updateAndDisplayBullets() {
     if (bullets[i].collideWithShield(player.getShieldBounds())) {
       bullets[i].reverse();
       bullets[i].isPlayerBullet = true;
+      shieldHitSound.play();
+      player.lastShieldHitTime = millis();
       continue;
     }
     if (player.collideWithBullet(bullets[i])) {
       player.life--;
+      playerHitSound.play();
       bullets.splice(i, 1);
       continue; 
     }
@@ -93,6 +128,7 @@ function updateAndDisplayBullets() {
   for (let i = enemies.length - 1; i >= 0; i--) {
     for (let j = bullets.length - 1; j >= 0; j--) {
       if (bullets[j] && bullets[j].isPlayerBullet && enemies[i] && enemies[i].collideWithBullet(bullets[j])) {
+        enemyDeathSound.play();
         enemies.splice(i, 1); 
         bullets.splice(j, 1);
         break;
@@ -101,14 +137,15 @@ function updateAndDisplayBullets() {
   }
 }
 
-class Player {
+class Player {r
   constructor(x, y) {
     this.x = x;
     this.y = y;
     this.life = 3;
     this.width = 50;
     this.height = 50;
-    this.speed = 5;
+    this.speed = 3;
+    this.lastShieldHitTime = 0;
   }
 
   handleInput() {
@@ -133,6 +170,9 @@ class Player {
       gameOver = true;
       displayGameOver();
     }
+
+    this.x = constrain(this.x, 0 + this.width / 2, GAME_WIDTH - this.width / 2);
+    this.y = constrain(this.y, 0 + this.height / 2, GAME_HEIGHT - this.height / 2);
   }
 
   display() {
@@ -141,14 +181,22 @@ class Player {
     push();
     translate(this.x, this.y);
     rotate(angle);
+    this.shield();
     fill(255);
     rect(-this.width / 2, -this.height / 2, this.width, this.height);
-    this.shield();
     pop();
   }
 
   shield() {
-    fill(0, 0, 255, 100);
+    if (millis() - this.lastShieldHitTime < 500) {
+      if (millis() % 100 < 50) {
+        fill(0, 0, 255, 0);
+      } else {
+        fill(0, 0, 255, 100);
+      }
+    } else {
+      fill(0, 0, 255, 100);
+    }
     rect(SHIELD_OFFSET, -SHIELD_HEIGHT / 2, SHIELD_WIDTH, SHIELD_HEIGHT);
   }
 
@@ -206,6 +254,7 @@ class Enemy {
   shoot(playerX, playerY) {
     let bullet = new Bullet(this.x, this.y, playerX, playerY);
     bullets.push(bullet);
+    shootEnemySound.play();
   }
 
   display() {
