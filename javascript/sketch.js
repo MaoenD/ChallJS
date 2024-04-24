@@ -55,9 +55,11 @@ function draw() { // Update and display the game objects
   if (!gameOver && !gameStarted) {
     startGame();
   } else if (!gameOver) {
+    
     if (frameCount % ENEMY_INTERVAL === 0) { // Create a new enemy every ENEMY_INTERVAL frames
       let numberOfEnemies = Math.floor(Math.random() * 3) + 1; // Random number of enemies between 1 and 3
-      for (let i = 0; i < numberOfEnemies; i++) { // Create the enemies
+      let additionalEnemies = Math.floor(score / 15); // Additional enemies based on the score
+      for (let i = 0; i < numberOfEnemies + additionalEnemies; i++) { // Create the enemies
         enemies.push(new Enemy(player.x, player.y));
       }
     }
