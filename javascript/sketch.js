@@ -4,6 +4,8 @@ let shieldHitSound;
 let shootEnemySound;
 let gameOverSound;
 
+let gameStarted = false;
+
 let font;
 
 let score = 0;
@@ -51,21 +53,31 @@ function draw() {
   player.display();
   player.handleInput();
 
-  if (frameCount % ENEMY_INTERVAL === 0 && !gameOver) {
-    let numberOfEnemies = Math.floor(Math.random() * 3) + 1;
-    for (let i = 0; i < numberOfEnemies; i++) {
-      enemies.push(new Enemy(player.x, player.y));
+  if (!gameOver && !gameStarted) {
+    startGame();
+  } else if (!gameOver) {
+    if (frameCount % ENEMY_INTERVAL === 0) {
+      let numberOfEnemies = Math.floor(Math.random() * 3) + 1;
+      for (let i = 0; i < numberOfEnemies; i++) {
+        enemies.push(new Enemy(player.x, player.y));
+      }
+    }
+
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      enemies[i].update(player.x, player.y);
+      enemies[i].display();
+    }
+
+    updateAndDisplayBullets();
+    displayScore()
+    displayLife();
+  } else {
+    displayGameOver();
+    
+    if (keyIsDown(82)) {
+      restartGame();
     }
   }
-
-  for (let i = 0; i < enemies.length; i++) {
-    enemies[i].update(player.x, player.y);
-    enemies[i].display();
-  }
-
-  updateAndDisplayBullets();
-  displayScore()
-  displayLife();
 }
 
 function displayScore() {
@@ -107,11 +119,6 @@ function displayGameOver() {
       gameOverSound.play();
     }
     gameOverSoundPlayed = true;
-  }
-
-  if (keyIsDown(82)) {
-    restartGame();
-    console.log("Restarting game");
   }
 }
 
@@ -175,4 +182,14 @@ function mute() {
     soundButton.style('background-color', 'red');
     muted = true
   }
+}
+
+function startGame() {
+  if (keyIsDown(32)) {
+    gameStarted = true;
+  }
+  fill(0);
+  textFont(font);
+  textSize(60);
+  text("Press SPACE to start", windowWidth / 2 - 200, windowHeight / 2);
 }
