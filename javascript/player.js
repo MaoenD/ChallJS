@@ -4,7 +4,6 @@ const SHIELD_OFFSET = 35;
 
 let player;
 
-
 class Player {r
     constructor(x, y) {
       this.x = x;
@@ -26,6 +25,7 @@ class Player {r
 
       if (this.canDash() && keyIsDown(SHIFT)) {
         finalSpeed += 100
+        dashPlayerSound.play();
         this.lastDashTime = millis() / 1000;
       }
   
@@ -35,7 +35,7 @@ class Player {r
       if (keyIsDown(RIGHT_ARROW) || keyIsDown(68) || keyIsDown(76)) {
           this.ax = finalSpeed;
       }
-      if (keyIsDown(UP_ARROW) || keyIsDown(90) || keyIsDown(73) || keyIsDown(73)) {
+      if (keyIsDown(UP_ARROW) || keyIsDown(90) || keyIsDown(73)) {
           this.ay = -finalSpeed;
       }
       if (keyIsDown(DOWN_ARROW) || keyIsDown(83) || keyIsDown(75)) {
@@ -49,15 +49,15 @@ class Player {r
   
     update() {
       fill(210);
-      rect(150, 150, windowWidth - 300, windowHeight - 300);
+      rect(150, 150, GAME_WIDTH - 300, GAME_WIDTH - 300);
   
       if(this.life === 0) {
         gameOver = true;
         displayGameOver();
       }
   
-      this.x = constrain(this.x, this.width / 2 + 150, windowWidth - this.width / 2 - 150);
-      this.y = constrain(this.y, this.height / 2 + 150, windowHeight - this.height / 2 - 150);
+      this.x = constrain(this.x, this.width / 2 + 150, GAME_WIDTH - this.width / 2 - 150);
+      this.y = constrain(this.y, this.height / 2 + 150, GAME_HEIGHT - this.height / 2 - 150);
     }
   
     display() {

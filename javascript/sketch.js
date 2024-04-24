@@ -1,7 +1,11 @@
+const GAME_HEIGHT = 800;
+const GAME_WIDTH = 800;
+
 let playerHitSound;
 let enemyDeathSound;
 let shieldHitSound;
 let shootEnemySound;
+let dashPlayerSound;
 let gameOverSound;
 
 let gameStarted = false;
@@ -9,6 +13,7 @@ let gameStarted = false;
 let font;
 
 let score = 0;
+let bestscore = 0;
 let gameOver = false;
 let gameOverSoundPlayed = false;
 let muted = false;
@@ -18,6 +23,7 @@ function preload() {
   enemyDeathSound = loadSound('sound/enemyDeath.wav');
   shieldHitSound = loadSound('sound/shieldHit.wav');
   shootEnemySound = loadSound('sound/shootEnemy.wav');
+  dashPlayerSound = loadSound('sound/dashPlayer.wav');
   gameOverSound = loadSound('sound/gameOver.wav');
 
   font = loadFont('font/font.otf');
@@ -26,10 +32,10 @@ function preload() {
 let soundButton;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  player = new Player(windowWidth / 2, windowHeight / 2);
+  createCanvas(GAME_HEIGHT, GAME_WIDTH);
+  player = new Player(GAME_HEIGHT / 2, GAME_WIDTH / 2);
   soundButton = createButton('Sounds');
-  soundButton.position(windowWidth - 95, 20);
+  soundButton.position(GAME_WIDTH - 95, 730);
   soundButton.style('background-color', 'green');
   soundButton.style('color', 'white');
   soundButton.style('border-radius', '5px');
@@ -37,13 +43,6 @@ function setup() {
   soundButton.style('padding', '10px');
   soundButton.style('border', 'none');
   soundButton.mousePressed(mute);
-}
-
-function windowResized() {
-  soundButton.position(windowWidth - 95, 20);
-  resizeCanvas(windowWidth, windowHeight);
-  player.x = windowWidth / 2;
-  player.y = windowHeight / 2;
 }
 
 function draw() {
@@ -66,12 +65,12 @@ function draw() {
     for (let i = enemies.length - 1; i >= 0; i--) {
       enemies[i].update(player.x, player.y);
       enemies[i].display();
+      enemies[i].constrain();
     }
 
     updateAndDisplayBullets();
     displayScore()
     displayLife();
-    displayDash()
   } else {
     displayGameOver();
     if (keyIsDown(82)) {
@@ -83,7 +82,8 @@ function draw() {
 function displayScore() {
   fill(0);
   textSize(40);
-  text("Score: " + score, 10, 35);
+  textAlign(LEFT, CENTER)
+  text("Score:" + score + "/" + bestscore, 10, 100);
 }
 
 function displayLife() {
@@ -91,36 +91,29 @@ function displayLife() {
   textSize(50);
   textFont('Courier New');
   if (player.life === 3) {
-    text("❤️❤️❤️", 10, 85);
+    text("❤️❤️❤️", 10, 50);
   } else if (player.life === 2) {
-    text("❤️❤️", 10, 85);
+    text("❤️❤️", 10, 50);
   } else if (player.life === 1) {
-    text("❤️", 10, 85);
-  }
-}
-
-function displayDash() {
-  fill(0);
-  textSize(50);
-  textFont('Courier New');
-  if (player.canDash()) {
-    if (!gameOver) {
-      text("Dash with shift", windowWidth / 2 - 250, windowHeight / 2 + 300);
-    }
+    text("❤️", 10, 50);
   }
 }
 
 function displayGameOver() {
   fill(0);
   textFont(font);
-  textSize(60);
-  text("Score: " + score, windowWidth / 2 - 120, windowHeight / 2 - 80);
-  text("G a m e   O v e r", windowWidth / 2 - 225, windowHeight / 2);
+  textSize(40);
+  textAlign(CENTER, CENTER)
+  text("Score: " + score, GAME_HEIGHT / 2 , GAME_HEIGHT / 2 - 150);
+  textSize(60)
+  fill(255, 0, 0)
+  text("Game  Over", GAME_HEIGHT / 2 , GAME_HEIGHT / 2);
+  fill(0);
   textSize(30);
-  text("Press R to restart", windowWidth / 2 - 125, windowHeight / 2 + 50);
+  text("Press R to restart", GAME_HEIGHT / 2, GAME_WIDTH / 2 + 75);
 
-  player.x = windowHeight / 2;
-  player.y = windowWidth / 2 + 200;
+  player.x = GAME_HEIGHT / 2;
+  player.y = GAME_WIDTH / 2 + 200;
 
   bullets = [];
   enemies = [];
@@ -134,8 +127,8 @@ function displayGameOver() {
 }
 
 function restartGame() {
-  player.x = windowWidth / 2;
-  player.y = windowHeight / 2;
+  player.x = GAME_WIDTH / 2;
+  player.y = GAME_HEIGHT / 2;
   player.life = 3;
   score = 0;
   gameOver = false;
@@ -166,7 +159,7 @@ function updateAndDisplayBullets() {
       continue;
     }
 
-    if (bullets[i].x < 0 || bullets[i].x > windowWidth || bullets[i].y < 0 || bullets[i].y > windowHeight) {
+    if (bullets[i].x < 0 || bullets[i].x > GAME_WIDTH || bullets[i].y < 0 || bullets[i].y > GAME_HEIGHT) {
       bullets.splice(i, 1);
     }
   }
@@ -180,12 +173,16 @@ function updateAndDisplayBullets() {
         enemies.splice(i, 1);
         bullets.splice(j, 1);
         score++;
+
+        if (score > bestscore) {
+          bestscore = score;
+        }
+  
         break;
       }
     }
   }
 }
-
 
 function mute() {
   if (muted) {
@@ -203,6 +200,6 @@ function startGame() {
   }
   fill(0);
   textFont(font);
-  textSize(60);
-  text("Press SPACE to start", windowWidth / 2 - 310, windowHeight / 2);
+  textSize(40);
+  text("Press SPACE to start", GAME_WIDTH / 2 - 215 , GAME_HEIGHT / 2 - 150);
 }
