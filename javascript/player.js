@@ -1,5 +1,5 @@
 const SHIELD_WIDTH = 10;
-const SHIELD_HEIGHT = 100;
+const SHIELD_HEIGHT = 50;
 const SHIELD_OFFSET = 35;
 
 let player;

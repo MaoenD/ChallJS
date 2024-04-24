@@ -47,7 +47,9 @@ class Enemy {
     shoot(playerX, playerY) {
       let bullet = new Bullet(this.x, this.y, playerX, playerY);
       bullets.push(bullet);
-      shootEnemySound.play();
+      if (!muted) {
+          shootEnemySound.play();
+      }
     }
   
     display() {

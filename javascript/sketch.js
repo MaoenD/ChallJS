@@ -9,6 +9,7 @@ let font;
 let score = 0;
 let gameOver = false;
 let gameOverSoundPlayed = false;
+let muted = false;
 
 function preload() {
   playerHitSound = loadSound('sound/playerHit.wav');
@@ -20,12 +21,24 @@ function preload() {
   font = loadFont('font/font.otf');
 }
 
+let soundButton;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   player = new Player(windowWidth / 2, windowHeight / 2);
+  soundButton = createButton('Sounds');
+  soundButton.position(windowWidth - 95, 20);
+  soundButton.style('background-color', 'green');
+  soundButton.style('color', 'white');
+  soundButton.style('border-radius', '5px');
+  soundButton.style('font-size', '16px');
+  soundButton.style('padding', '10px');
+  soundButton.style('border', 'none');
+  soundButton.mousePressed(mute);
 }
 
 function windowResized() {
+  soundButton.position(windowWidth - 95, 20);
   resizeCanvas(windowWidth, windowHeight);
   player.x = windowWidth / 2;
   player.y = windowHeight / 2;
@@ -78,6 +91,7 @@ function displayGameOver() {
   fill(0);
   textFont(font);
   textSize(60);
+  text("Score: " + score, windowWidth / 2 - 120, windowHeight / 2 - 80);
   text("G a m e   O v e r", windowWidth / 2 - 225, windowHeight / 2);
   textSize(30);
   text("Press R to restart", windowWidth / 2 - 125, windowHeight / 2 + 50);
@@ -89,7 +103,9 @@ function displayGameOver() {
   enemies = [];
 
   if (!gameOverSoundPlayed) {
-    gameOverSound.play();
+    if (!muted) {
+      gameOverSound.play();
+    }
     gameOverSoundPlayed = true;
   }
 
@@ -116,13 +132,17 @@ function updateAndDisplayBullets() {
     if (bullets[i].collideWithShield(player.getShieldBounds())) {
       bullets[i].reverse();
       bullets[i].isPlayerBullet = true;
-      shieldHitSound.play();
+      if (!muted) {
+        shieldHitSound.play();
+      }
       player.lastShieldHitTime = millis();
       continue;
     }
     if (player.collideWithBullet(bullets[i])) {
       player.life--;
-      playerHitSound.play();
+      if (!muted) {
+        playerHitSound.play();
+      }
       bullets.splice(i, 1);
       continue;
     }
@@ -135,12 +155,24 @@ function updateAndDisplayBullets() {
   for (let i = enemies.length - 1; i >= 0; i--) {
     for (let j = bullets.length - 1; j >= 0; j--) {
       if (bullets[j] && bullets[j].isPlayerBullet && enemies[i] && enemies[i].collideWithBullet(bullets[j])) {
-        enemyDeathSound.play();
+        if (!muted) {
+          enemyDeathSound.play();
+        }
         enemies.splice(i, 1);
         bullets.splice(j, 1);
         score++;
         break;
       }
     }
+  }
+}
+
+function mute() {
+  if (muted) {
+    soundButton.style('background-color', 'green');
+    muted = false
+  } else {
+    soundButton.style('background-color', 'red');
+    muted = true
   }
 }
