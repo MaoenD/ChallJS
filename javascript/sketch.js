@@ -147,7 +147,7 @@ function updateAndDisplayBullets() {
     bullets[i].update();
     bullets[i].display();
 
-    if (bullets[i].collideWithShield(player.getShieldBounds())) {
+    if (!bullets[i].isPlayerBullet && bullets[i].collideWithShield(player.getShieldBounds())) {
       bullets[i].reverse();
       bullets[i].isPlayerBullet = true;
       if (!muted) {
@@ -156,7 +156,8 @@ function updateAndDisplayBullets() {
       player.lastShieldHitTime = millis();
       continue;
     }
-    if (player.collideWithBullet(bullets[i])) {
+
+    if (!bullets[i].isPlayerBullet && player.collideWithBullet(bullets[i])) {
       player.life--;
       if (!muted) {
         playerHitSound.play();
@@ -172,7 +173,7 @@ function updateAndDisplayBullets() {
 
   for (let i = enemies.length - 1; i >= 0; i--) {
     for (let j = bullets.length - 1; j >= 0; j--) {
-      if (bullets[j] && bullets[j].isPlayerBullet && enemies[i] && enemies[i].collideWithBullet(bullets[j])) {
+      if (bullets[j].isPlayerBullet && enemies[i].collideWithBullet(bullets[j])) {
         if (!muted) {
           enemyDeathSound.play();
         }
@@ -184,6 +185,7 @@ function updateAndDisplayBullets() {
     }
   }
 }
+
 
 function mute() {
   if (muted) {
