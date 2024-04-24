@@ -4,6 +4,7 @@ const SHIELD_OFFSET = 35;
 
 let player;
 
+
 class Player {r
     constructor(x, y) {
       this.x = x;
@@ -18,16 +19,16 @@ class Player {r
     handleInput() {
         if(gameOver) return;
 
-        if (keyIsDown(LEFT_ARROW)) {
+        if (keyIsDown === LEFT_ARROW || key === 'q' || key === 'Q' || key === 'j' || key === 'J') {
             this.x -= this.speed;
         }
-        if (keyIsDown(RIGHT_ARROW)) {
+        if (keyIsDown === RIGHT_ARROW || key === 'd' || key === 'D' || key === 'l' || key === 'L') {
             this.x += this.speed;
         }
-        if (keyIsDown(UP_ARROW)) {
+        if (keyIsDown === UP_ARROW || key === 'z' || key === 'Z' || key === 'i' || key === 'I') {
             this.y -= this.speed;
         }
-        if (keyIsDown(DOWN_ARROW)) {
+        if (keyIsDown === DOWN_ARROW || key === 's' || key === 'S' || key === 'k' || key === 'K') {
             this.y += this.speed;
         }
     }
