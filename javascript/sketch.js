@@ -66,6 +66,7 @@ function draw() {
   updateAndDisplayBullets();
   displayScore()
   displayLife();
+  displayDash()
 }
 
 function displayScore() {
@@ -84,6 +85,17 @@ function displayLife() {
     text("❤️❤️", 10, 85);
   } else if (player.life === 1) {
     text("❤️", 10, 85);
+  }
+}
+
+function displayDash() {
+  fill(0);
+  textSize(50);
+  textFont('Courier New');
+  if (player.canDash()) {
+    if (!gameOver) {
+      text("Dash with shift", windowWidth / 2 - 250, windowHeight / 2 + 300);
+    }
   }
 }
 

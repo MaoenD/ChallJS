@@ -14,6 +14,7 @@ class Player {r
       this.height = 50;
       this.speed = 3;
       this.lastShieldHitTime = 0;
+      this.lastDashTime = 0;
     }
 
     handleInput() {
@@ -21,18 +22,24 @@ class Player {r
   
       this.ax = 0;
       this.ay = 0;
+      let finalSpeed = this.speed
+
+      if (this.canDash() && keyIsDown(SHIFT)) {
+        finalSpeed += 100
+        this.lastDashTime = millis() / 1000;
+      }
   
       if (keyIsDown(LEFT_ARROW) || keyIsDown(81) || keyIsDown(74)) {
-          this.ax = -this.speed;
+          this.ax = -finalSpeed;
       }
       if (keyIsDown(RIGHT_ARROW) || keyIsDown(68) || keyIsDown(76)) {
-          this.ax = this.speed;
+          this.ax = finalSpeed;
       }
       if (keyIsDown(UP_ARROW) || keyIsDown(90) || keyIsDown(73) || keyIsDown(73)) {
-          this.ay = -this.speed;
+          this.ay = -finalSpeed;
       }
       if (keyIsDown(DOWN_ARROW) || keyIsDown(83) || keyIsDown(75)) {
-          this.ay = this.speed;
+          this.ay = finalSpeed;
       }
   
       this.x += this.ax;
@@ -88,5 +95,11 @@ class Player {r
     collideWithBullet(bullet) {
       let distance = dist(this.x, this.y, bullet.x, bullet.y);
       return distance < this.width / 2;
+    }
+
+    canDash() {
+      let currentTime = millis() / 1000;
+      let timeSinceLastDash = currentTime - this.lastDashTime;
+      return timeSinceLastDash >= 4;
     }
   }
