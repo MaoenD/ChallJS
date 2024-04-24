@@ -17,21 +17,21 @@ class Player {r
     }
 
     handleInput() {
-        if(gameOver) return;
-
-        if (keyIsDown === LEFT_ARROW || key === 'q' || key === 'Q' || key === 'j' || key === 'J') {
-            this.x -= this.speed;
-        }
-        if (keyIsDown === RIGHT_ARROW || key === 'd' || key === 'D' || key === 'l' || key === 'L') {
-            this.x += this.speed;
-        }
-        if (keyIsDown === UP_ARROW || key === 'z' || key === 'Z' || key === 'i' || key === 'I') {
-            this.y -= this.speed;
-        }
-        if (keyIsDown === DOWN_ARROW || key === 's' || key === 'S' || key === 'k' || key === 'K') {
-            this.y += this.speed;
-        }
-    }
+      if(gameOver) return;
+  
+      if (keyIsDown(LEFT_ARROW) || keyIsDown(81)) {
+          this.x -= this.speed;
+      }
+      if (keyIsDown(RIGHT_ARROW) || keyIsDown(68)) {
+          this.x += this.speed;
+      }
+      if (keyIsDown(UP_ARROW) || keyIsDown(90)) {
+          this.y -= this.speed;
+      }
+      if (keyIsDown(DOWN_ARROW) || keyIsDown(83)) {
+          this.y += this.speed;
+      }
+  }
   
     update() {
       fill(210);
