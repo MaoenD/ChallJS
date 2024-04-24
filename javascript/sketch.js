@@ -124,7 +124,7 @@ function updateAndDisplayBullets() {
       player.life--;
       playerHitSound.play();
       bullets.splice(i, 1);
-      continue; 
+      continue;
     }
 
     if (bullets[i].x < 0 || bullets[i].x > windowWidth || bullets[i].y < 0 || bullets[i].y > windowHeight) {
@@ -136,7 +136,7 @@ function updateAndDisplayBullets() {
     for (let j = bullets.length - 1; j >= 0; j--) {
       if (bullets[j] && bullets[j].isPlayerBullet && enemies[i] && enemies[i].collideWithBullet(bullets[j])) {
         enemyDeathSound.play();
-        enemies.splice(i, 1); 
+        enemies.splice(i, 1);
         bullets.splice(j, 1);
         score++;
         break;
