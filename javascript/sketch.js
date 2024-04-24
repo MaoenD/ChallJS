@@ -39,7 +39,10 @@ function draw() {
   player.handleInput();
 
   if (frameCount % ENEMY_INTERVAL === 0 && !gameOver) {
-    enemies.push(new Enemy(player.x, player.y));
+    let numberOfEnemies = Math.floor(Math.random() * 3) + 1;
+    for (let i = 0; i < numberOfEnemies; i++) {
+      enemies.push(new Enemy(player.x, player.y));
+    }
   }
 
   for (let i = 0; i < enemies.length; i++) {
