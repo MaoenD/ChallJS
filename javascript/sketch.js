@@ -74,7 +74,6 @@ function draw() {
     displayDash()
   } else {
     displayGameOver();
-
     if (keyIsDown(82)) {
       restartGame();
     }
@@ -203,5 +202,5 @@ function startGame() {
   fill(0);
   textFont(font);
   textSize(60);
-  text("Press SPACE to start", windowWidth / 2 - 200, windowHeight / 2);
+  text("Press SPACE to start", windowWidth / 2 - 310, windowHeight / 2);
 }
