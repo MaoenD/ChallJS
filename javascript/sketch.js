@@ -1,7 +1,3 @@
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 800;
-
-
 let playerHitSound;
 let enemyDeathSound;
 let shieldHitSound;
@@ -10,6 +6,7 @@ let gameOverSound;
 
 let font;
 
+let score = 0;
 let gameOver = false;
 let gameOverSoundPlayed = false;
 
@@ -24,8 +21,14 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(GAME_WIDTH, GAME_HEIGHT);
-  player = new Player(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+  createCanvas(windowWidth, windowHeight);
+  player = new Player(windowWidth / 2, windowHeight / 2);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  player.x = windowWidth / 2;
+  player.y = windowHeight / 2;
 }
 
 function draw() {
@@ -45,7 +48,14 @@ function draw() {
   }
 
   updateAndDisplayBullets();
+  displayScore()
   displayLife();
+}
+
+function displayScore() {
+  fill(0);
+  textSize(40);
+  text("Score: " + score, 10, 35);
 }
 
 function displayLife() {
@@ -53,11 +63,11 @@ function displayLife() {
   textSize(50);
   textFont('Courier New');
   if (player.life === 3) {
-    text("❤️❤️❤️", 10, 60);
+    text("❤️❤️❤️", 10, 85);
   } else if (player.life === 2) {
-    text("❤️❤️", 10, 60);
+    text("❤️❤️", 10, 85);
   } else if (player.life === 1) {
-    text("❤️", 10, 60);
+    text("❤️", 10, 85);
   }
 }
 
@@ -65,12 +75,12 @@ function displayGameOver() {
   fill(0);
   textFont(font);
   textSize(60);
-  text("G a m e   O v e r", GAME_WIDTH / 2 - 225, GAME_HEIGHT / 2);
+  text("G a m e   O v e r", windowWidth / 2 - 225, windowHeight / 2);
   textSize(30);
-  text("Press R to restart", GAME_WIDTH / 2 - 125, GAME_HEIGHT / 2 + 50);
+  text("Press R to restart", windowWidth / 2 - 125, windowHeight / 2 + 50);
 
-  player.x = GAME_HEIGHT / 2;
-  player.y = GAME_WIDTH / 2 + 200;
+  player.x = windowHeight / 2;
+  player.y = windowWidth / 2 + 200;
 
   bullets = [];
   enemies = [];
@@ -87,9 +97,10 @@ function displayGameOver() {
 }
 
 function restartGame() {
-  player.x = GAME_WIDTH / 2;
-  player.y = GAME_HEIGHT / 2;
+  player.x = windowWidth / 2;
+  player.y = windowHeight / 2;
   player.life = 3;
+  score = 0;
   gameOver = false;
   gameOverSoundPlayed = false;
 }
@@ -113,7 +124,7 @@ function updateAndDisplayBullets() {
       continue; 
     }
 
-    if (bullets[i].x < 0 || bullets[i].x > GAME_WIDTH || bullets[i].y < 0 || bullets[i].y > GAME_HEIGHT) {
+    if (bullets[i].x < 0 || bullets[i].x > windowWidth || bullets[i].y < 0 || bullets[i].y > windowHeight) {
       bullets.splice(i, 1);
     }
   }
@@ -124,6 +135,7 @@ function updateAndDisplayBullets() {
         enemyDeathSound.play();
         enemies.splice(i, 1); 
         bullets.splice(j, 1);
+        score++;
         break;
       }
     }

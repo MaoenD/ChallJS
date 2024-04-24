@@ -8,8 +8,8 @@ let enemies = [];
 
 class Enemy {
     constructor(playerX, playerY) {
-      this.x = random(GAME_WIDTH);
-      this.y = random(GAME_HEIGHT);
+      this.x = random(windowWidth);
+      this.y = random(windowHeight);
       this.lastShotTime = millis();
       this.moveTowardsPlayer(playerX, playerY);
     }

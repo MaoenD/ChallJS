@@ -14,35 +14,35 @@ class Player {r
       this.speed = 3;
       this.lastShieldHitTime = 0;
     }
-  
+
     handleInput() {
-      if(gameOver) return;
-  
-      if (keyIsDown(LEFT_ARROW)) {
-        this.x -= this.speed;
-      }
-      if (keyIsDown(RIGHT_ARROW)) {
-        this.x += this.speed;
-      }
-      if (keyIsDown(UP_ARROW)) {
-        this.y -= this.speed;
-      }
-      if (keyIsDown(DOWN_ARROW)) {
-        this.y += this.speed;
-      }
+        if(gameOver) return;
+
+        if (keyIsDown(LEFT_ARROW)) {
+            this.x -= this.speed;
+        }
+        if (keyIsDown(RIGHT_ARROW)) {
+            this.x += this.speed;
+        }
+        if (keyIsDown(UP_ARROW)) {
+            this.y -= this.speed;
+        }
+        if (keyIsDown(DOWN_ARROW)) {
+            this.y += this.speed;
+        }
     }
   
     update() {
       fill(210);
-      rect(GAME_WIDTH / 2 + - 250, GAME_HEIGHT / 2 - 250, 500, 500);
+      rect(150, 150, windowWidth - 300, windowHeight - 300);
   
       if(this.life === 0) {
         gameOver = true;
         displayGameOver();
       }
   
-      this.x = constrain(this.x, 0 + this.width / 2 + 150, GAME_WIDTH - this.width / 2 - 150);
-      this.y = constrain(this.y, 0 + this.height / 2 + 150, GAME_HEIGHT - this.height / 2 - 150);
+      this.x = constrain(this.x, this.width / 2 + 150, windowWidth - this.width / 2 - 150);
+      this.y = constrain(this.y, this.height / 2 + 150, windowHeight - this.height / 2 - 150);
     }
   
     display() {
